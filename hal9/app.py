@@ -4,6 +4,7 @@ import hal9 as h9
 import json
 
 from tool_calculator import calculate
+from tool_game import build_game
 
 MODEL = "llama3-70b-8192"
 
@@ -15,7 +16,10 @@ system_prompt = open('system.txt', 'r').read()
 messages = h9.load("messages", [{"role": "system", "content": system_prompt}])
 messages.append({"role": "user", "content": prompt})
 
-tools = h9.describe([calculate])
+tools = h9.describe([
+  calculate
+])
+
 tools = [{ "type": "function", "function": tool} for tool in tools]
 
 response = Groq().chat.completions.create(
@@ -31,16 +35,14 @@ response_message = response.choices[0].message
 tool_calls = response_message.tool_calls
 if tool_calls:
     available_functions = {
-        "calculate": calculate,
+        "calculate": calculate
     }
 
     for tool_call in tool_calls:
         function_name = tool_call.function.name
         function_to_call = available_functions[function_name]
         function_args = json.loads(tool_call.function.arguments)
-        function_response = function_to_call(
-            expression=function_args.get("expression")
-        )
+        function_response = str(function_to_call(**function_args))
 
         print(function_response)
         messages.append({"role": "assistant", "content": function_response})
