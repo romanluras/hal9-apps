@@ -20,3 +20,7 @@ jobs:
       run: hal9 deploy echo --name ECHO
       env:
           HAL9_TOKEN: ${{ secrets.HAL9_TOKEN }}
+    - name: Deploy App
+      run: hal9 deploy hal9 --name hal9
+      env:
+          HAL9_TOKEN: ${{ secrets.HAL9_TOKEN }}
