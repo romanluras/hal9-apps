@@ -2,6 +2,7 @@ from groq import Groq
 import os
 import hal9 as h9
 import json
+import openai
 
 from tool_calculator import calculate
 from tool_game import build_game
@@ -17,7 +18,8 @@ messages = h9.load("messages", [{"role": "system", "content": system_prompt}])
 messages.append({"role": "user", "content": prompt})
 
 tools = h9.describe([
-  calculate
+  calculate,
+  build_game
 ])
 
 tools = [{ "type": "function", "function": tool} for tool in tools]
@@ -35,7 +37,8 @@ response_message = response.choices[0].message
 tool_calls = response_message.tool_calls
 if tool_calls:
     available_functions = {
-        "calculate": calculate
+        "calculate": calculate,
+        "build_game": build_game
     }
 
     for tool_call in tool_calls:
